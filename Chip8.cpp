@@ -19,22 +19,24 @@ Chip8::Chip8() : m_PC {START_ADDRESS}
 
 // Load game to memory (from 0x200)
 void Chip8::loadGame(const std::string& path) {
-	// FIXME: non so se funzioni realmente!
-	std::fstream game {path, std::ios::in | std::ios::binary};
-	uint16_t counter {512};
-	std::string line {};
-	if(game.is_open()) {
-		while (game.good()) {
-			getline(game, line);
-			for (const auto& i : line) {
-				m_memory[counter] = i;
-				counter++;
-			}
+	std::fstream game {path, std::ios::in | std::ios::binary | std::ios::ate};
+
+	if(game.is_open()){
+		// Get size of game
+		std::streampos size = game.tellg();
+		char* buffer { new char[size]};
+
+		// Go back to beggining of the file
+		game.seekg(0, std::ios::beg);
+		game.read(buffer, size);
+		game.close();
+
+		// copy buffer to memory
+		for(int i = 0; i < size; ++i){
+			m_memory[START_ADDRESS + i] = buffer[i];
 		}
+		delete[] buffer;
 	}
-//	for(int i = 0; i < counter - 512; ++i){
-//		std::cout << i << ' ' << std::hex << static_cast<int>(m_memory[i + 512]) << std::endl;
-//	}
 }
 
 void Chip8::emulateCycle() {
