@@ -2,20 +2,23 @@
 // Created by matteo on 29/06/22.
 //
 
-#ifndef CHIP8__CHIP8_HPP_
-#define CHIP8__CHIP8_HPP_
+#pragma once
 
 #include <iostream>
 #include <array>
 #include <random>
 
-constexpr uint16_t START_ADDRESS = 0x200;
-constexpr uint16_t FONTSET_START_ADDRESS = 0x50;
-constexpr uint8_t CHAR = 16;
-constexpr uint8_t BYTE_IN_CHAR = 5;
-constexpr uint8_t FONT_ELEMENT_SIZE = CHAR * BYTE_IN_CHAR; // 16 character rappresented by 5 bytes each
-constexpr uint8_t DISPLAY_WIDTH = 64;
-constexpr uint8_t DISPLAY_HEIGHT = 32;
+constexpr uint16_t START_ADDRESS {0x200};
+constexpr uint16_t FONTSET_START_ADDRESS {0x50};
+constexpr uint8_t CHAR {16};
+constexpr uint8_t BYTE_IN_CHAR {5};
+constexpr uint8_t FONT_ELEMENT_SIZE {CHAR * BYTE_IN_CHAR}; // 16 character rappresented by 5 bytes each
+constexpr uint8_t DISPLAY_WIDTH {64};
+constexpr uint8_t DISPLAY_HEIGHT {32};
+constexpr uint16_t MEMORY_SIZE {4096};
+constexpr uint8_t REGISTERS {16};
+constexpr uint8_t STACK_DEPTH {16};
+
 
 // FONT
 constexpr std::array<uint8_t, FONT_ELEMENT_SIZE> FONTSET {
@@ -45,28 +48,30 @@ class Chip8 {
 	void emulateCycle();
 	void fromOpcodeToFunction();
 
+	[[nodiscard]] const std::array<uint32_t, DISPLAY_WIDTH * DISPLAY_HEIGHT>& getGraphics() const;
+	[[nodiscard]] const std::array<uint8_t, CHAR>& getKeypad() const;
+
   private:
 	// Memory
-	uint16_t m_opcode {}; // 35 opcode
-	std::array<uint8_t, 4096> m_memory {}; // 4096 byte
-	std::array<uint8_t, 16> m_registers {}; // 16 Registers (V0-VF) 8bit
+	uint16_t m_opcode {}; // 35 OPCODE_INVALID
+	std::array<uint8_t, MEMORY_SIZE> m_memory {}; // 4096 byte
+	std::array<uint8_t, REGISTERS> m_registers {}; // 16 Registers (V0-VF) 8bit
 	uint16_t m_RI {}; // 16 bit (12 was ok), Index Register used to store memory addresses for use in operations
 	uint16_t m_PC {}; // 16 bit (12 was ok), register that contains the address of the next instruction.
 
 	// Graphics
-	std::array<uint32_t, 64 * 32> m_graphics {}; // 64 pixel wide x 32 pixel high
+	std::array<uint32_t, DISPLAY_WIDTH * DISPLAY_HEIGHT> m_graphics {}; // 64 pixel wide x 32 pixel high
 
 	// Timer
-	uint8_t m_delayTimer {}; // 60Hz to 0
-	uint8_t m_soundTimer {}; // 60Hz to 0
+	uint8_t m_delayTimer {}; // 60 to 0
+	uint8_t m_soundTimer {}; // 60 to 0
 
 	// Stack
-	// TODO: forse meglio sostituire con std::stack
-	std::array<uint16_t, 16> m_stack {}; // stack that contains addresses before a jump to another function
+	std::array<uint16_t, STACK_DEPTH> m_stack {}; // stack that contains addresses before a jump to another function
 	uint16_t m_SP {}; // sp is the pointer to the right level of stack
 
 	// Keypad
-	std::array<uint16_t, 16> m_keypad {}; // key from 0 to F
+	std::array<uint8_t, CHAR> m_keypad {}; // key from 0 to F
 
 	// Random
 	std::random_device randomGenerator;
@@ -110,9 +115,3 @@ class Chip8 {
 	void OPCODE_Fx65(); // LD Vx, [I]
 	void OPCODE_INVALID(); // Invalid OPCODE
 };
-
-#endif //CHIP8__CHIP8_HPP_
-
-// 0x000-0x1FF - Chip 8 interpreter (contains font set in emu)
-// 0x050-0x0A0 - Used for the built in 4x5 pixel font set (0-F)
-// 0x200-0xFFF - Program ROM and work RAM

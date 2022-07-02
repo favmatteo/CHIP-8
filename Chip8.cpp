@@ -19,7 +19,7 @@ Chip8::Chip8() : m_PC {START_ADDRESS}
 
 // Load game to memory (from 0x200)
 void Chip8::loadGame(const std::string& path) {
-	std::fstream game {path, std::ios::in | std::ios::binary | std::ios::ate};
+	std::ifstream game {path, std::ios::in | std::ios::binary | std::ios::ate};
 
 	if(game.is_open()){
 		// Get size of game
@@ -32,16 +32,18 @@ void Chip8::loadGame(const std::string& path) {
 		game.close();
 
 		// copy buffer to memory
-		for(int i = 0; i < size; ++i){
+		for(long i = 0; i < size; ++i){
 			m_memory[START_ADDRESS + i] = buffer[i];
 		}
+
 		delete[] buffer;
 	}
 }
 
 void Chip8::emulateCycle() {
 	// Fetch Opcode
-	m_opcode = (m_memory[m_PC] << 8 | m_memory[m_PC + 1]);
+	m_opcode = (m_memory[m_PC] << 8) | m_memory[m_PC + 1];
+
 	m_PC += 2;
 
 	// Decode and execute Opcode
@@ -55,11 +57,6 @@ void Chip8::emulateCycle() {
 		m_soundTimer--;
 	}
 
-}
-
-// Clear the display
-void Chip8::OPCODE_00E0() {
-	m_graphics.fill(0);
 }
 
 // Call the correct function according to OPCODE
@@ -120,6 +117,10 @@ void Chip8::fromOpcodeToFunction() {
 	}
 }
 
+// Clear the display
+void Chip8::OPCODE_00E0() {
+	m_graphics.fill(0);
+}
 
 //  The interpreter sets the program counter to the address at the top of the stack,
 //  then subtracts 1 from the stack pointer.
@@ -130,16 +131,16 @@ void Chip8::OPCODE_00EE() {
 
 // Jump to location nnn.
 void Chip8::OPCODE_1nnn() {
-	uint16_t address = m_opcode & 0xFFF;
-	m_PC = address;
+	uint16_t nnn = m_opcode & 0x0FFF;
+	m_PC = nnn;
 }
 
 //  The interpreter increments the stack pointer, then puts the current PC on the top of the stack.
 //  The PC is then set to nnn.
 void Chip8::OPCODE_2nnn() {
+	uint16_t nnn = m_opcode & 0x0FFF;
 	m_stack[m_SP] = m_PC;
 	m_SP++;
-	uint16_t nnn = m_opcode & 0xFFF;
 	m_PC = nnn;
 }
 
@@ -148,7 +149,7 @@ void Chip8::OPCODE_2nnn() {
 void Chip8::OPCODE_3xkk() {
 	uint8_t Vx = (m_opcode & 0x0F00) >> 8;
 	uint8_t kk = m_opcode & 0x00FF;
-	if(Vx == kk) m_PC += 2;
+	if(m_registers[Vx] == kk) m_PC += 2;
 
 }
 
@@ -157,15 +158,15 @@ void Chip8::OPCODE_3xkk() {
 void Chip8::OPCODE_4xkk() {
 	uint8_t Vx = (m_opcode & 0x0F00) >> 8;
 	uint8_t kk = m_opcode & 0x00FF;
-	if(Vx != kk) m_PC += 2;
+	if(m_registers[Vx] != kk) m_PC += 2;
 }
 
 //  The interpreter compares register Vx to register Vy, and if they are equal,
 //  increments the program counter by 2.
 void Chip8::OPCODE_5xy0() {
 	uint8_t Vx = (m_opcode & 0x0F00) >> 8;
-	uint8_t Vy = (m_opcode & 0x000F) >> 4;
-	if(Vx == Vy) m_PC += 2;
+	uint8_t Vy = (m_opcode & 0x00F0) >> 4;
+	if(m_registers[Vx] == m_registers[Vy]) m_PC += 2;
 }
 
 // The interpreter puts the value kk into register Vx.
@@ -313,7 +314,7 @@ void Chip8::OPCODE_Dxyn() {
 		for(uint col {}; col < 8; ++col){
 			uint8_t spritePixel = spriteByte & (0x80 >> col);
 			uint32_t& screenPixel = m_graphics[(yPos + row) * DISPLAY_WIDTH + (xPos + col)];
-			if(spritePixel){ // FIXME: controllare funzione
+			if(spritePixel){
 				if(screenPixel == 0xFFFFFFFF) m_registers[0xF] = 1;
 			}
 			screenPixel = screenPixel ^ 0xFFFFFFFF;
@@ -352,7 +353,7 @@ void Chip8::OPCODE_Fx0A() {
 		if(m_keypad[i]){
 			m_registers[Vx] = i;
 			keyPressed = true;
-			break; // FIXME: migliora codice
+			break;
 		}
 	}
 	if(!keyPressed) {
@@ -399,6 +400,7 @@ void Chip8::OPCODE_Fx33() {
 		value /= 10;
 	}
 
+
 }
 
 // Store registers V0 through Vx in memory starting at location I.
@@ -406,7 +408,7 @@ void Chip8::OPCODE_Fx33() {
 // starting at the address in I.
 void Chip8::OPCODE_Fx55() {
 	uint8_t Vx = (m_opcode & 0x0F00) >> 8;
-	for(size_t i = 0; i <= Vx; ++i){
+	for(uint8_t i = 0; i <= Vx; ++i){
 		m_memory[m_RI + i] = m_registers[i];
 	}
 }
@@ -416,10 +418,18 @@ void Chip8::OPCODE_Fx55() {
 // into registers V0 through Vx.
 void Chip8::OPCODE_Fx65() {
 	uint8_t Vx = (m_opcode & 0x0F00) >> 8;
-	for(size_t i = 0; i <= Vx; ++i){
+	for(uint8_t i = 0; i <= Vx; ++i){
 		m_registers[i] = m_memory[m_RI + i];
 	}
 }
 
 // Invalid OPCODE it does nothing
 void Chip8::OPCODE_INVALID() {}
+
+const std::array<uint32_t, DISPLAY_WIDTH * DISPLAY_HEIGHT>& Chip8::getGraphics() const {
+	return m_graphics;
+}
+
+const std::array<uint8_t, CHAR>& Chip8::getKeypad() const {
+	return m_keypad;
+}

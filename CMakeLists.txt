@@ -3,13 +3,17 @@ project(CHIP_8)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(CHIP_8 main.cpp Chip8.hpp Chip8.cpp)
+add_executable(CHIP_8 main.cpp Chip8.hpp Chip8.cpp Platform.cpp Platform.hpp)
 
 # FMT Library
-target_link_libraries(CHIP_8 PUBLIC fmt)
+# target_link_libraries(CHIP_8 PUBLIC fmt)
 
 # SFML Library
-target_link_libraries(CHIP_8 PUBLIC sfml-graphics sfml-window sfml-system)
+# target_link_libraries(CHIP_8 PUBLIC sfml-graphics sfml-window sfml-system)
+
+# SDL2
+find_package(SDL2 REQUIRED SDL2)
+target_link_libraries(CHIP_8 PRIVATE SDL2)
 
 # Compiler Flag
 if (MSVC)
