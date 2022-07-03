@@ -1,12 +1,11 @@
-//
-// Created by matteo on 29/06/22.
-//
-
 #pragma once
 
 #include <iostream>
 #include <array>
+#include <memory>
 #include <random>
+
+#include "SDL2/SDL_mixer.h"
 
 constexpr uint16_t START_ADDRESS {0x200};
 constexpr uint16_t FONTSET_START_ADDRESS {0x50};
@@ -18,9 +17,6 @@ constexpr uint8_t DISPLAY_HEIGHT {32};
 constexpr uint16_t MEMORY_SIZE {4096};
 constexpr uint8_t REGISTERS {16};
 constexpr uint8_t STACK_DEPTH {16};
-
-
-// FONT
 constexpr std::array<uint8_t, FONT_ELEMENT_SIZE> FONTSET {
 	0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
 	0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -77,6 +73,9 @@ class Chip8 {
 	std::random_device randomGenerator;
 	std::mt19937 mt;
 	std::uniform_int_distribution<int> dist {0, 255};
+
+	// Audio
+	std::unique_ptr<Mix_Chunk, void (*)(Mix_Chunk *)> chunk;
 
 	// OPCODE Implementations http://devernay.free.fr/hacks/chip8/C8TECH10.HTM
 	void OPCODE_00E0(); // CLS

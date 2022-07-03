@@ -1,20 +1,23 @@
-//
-// Created by matteo on 29/06/22.
-//
-
-#include "Chip8.hpp"
-
 #include <iostream>
 #include <fstream>
 
-// Initialize registers and memory
+#include "Chip8.hpp"
+#include "SDL2/SDL_mixer.h"
+
 Chip8::Chip8() : m_PC {START_ADDRESS}
                , mt {randomGenerator()}
+			   , chunk { Mix_LoadWAV("audio/beep.wav"), Mix_FreeChunk }
 {
 	// load fonts
 	for(auto i = 0; i < FONT_ELEMENT_SIZE; ++i){
 		m_memory[FONTSET_START_ADDRESS + i] = FONTSET[i];
 	}
+
+	// load sounds
+	if(!chunk){
+		std::cout << "Sound could not be loaded" << std::endl;
+	}
+	Mix_VolumeChunk(chunk.get(), MIX_MAX_VOLUME / 2);
 }
 
 // Load game to memory (from 0x200)
@@ -53,7 +56,7 @@ void Chip8::emulateCycle() {
 	if(m_delayTimer > 0) m_delayTimer--;
 
 	if(m_soundTimer > 0) {
-		if (m_soundTimer == 1) std::cout << "BEEP" << std::endl;
+		if (m_soundTimer == 1) Mix_PlayChannel(-1, chunk.get(), 0);
 		m_soundTimer--;
 	}
 
@@ -399,8 +402,6 @@ void Chip8::OPCODE_Fx33() {
 		m_memory[m_RI+i] = value % 10;
 		value /= 10;
 	}
-
-
 }
 
 // Store registers V0 through Vx in memory starting at location I.

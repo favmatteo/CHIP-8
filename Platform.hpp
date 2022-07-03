@@ -1,17 +1,14 @@
-//
-// Created by matteo on 02/07/22.
-//
-
 #pragma once
 
 #include <string>
 
 #include "SDL2/SDL.h"
+#include "SDL2/SDL_audio.h"
 
-const std::array SDL_KEY_TYPES {SDLK_ESCAPE, SDLK_x, SDLK_1, SDLK_2, SDLK_3,
-								SDLK_q, SDLK_w, SDLK_e, SDLK_a, SDLK_s, SDLK_d,
-								SDLK_z, SDLK_c, SDLK_4, SDLK_r, SDLK_r, SDLK_f,
-								SDLK_v};
+const std::array SDL_KEY_TYPES {SDLK_ESCAPE, SDLK_1, SDLK_2, SDLK_3, SDLK_4,
+								SDLK_q, SDLK_w, SDLK_e, SDLK_r,
+								SDLK_a, SDLK_s, SDLK_d, SDLK_f,
+								SDLK_z, SDLK_x, SDLK_c, SDLK_v};
 
 class Platform
 {

@@ -1,7 +1,3 @@
-//
-// Created by matteo on 02/07/22.
-//
-
 #include <array>
 
 #include "Platform.hpp"
@@ -29,15 +25,14 @@ void Platform::update(const void* buffer, int pitch) {
 }
 
 bool Platform::processInput(std::array<uint8_t, 16>& keys) {
-	bool quit = false;
+	bool end = false;
 
 	SDL_Event event;
-
 
 	while (SDL_PollEvent(&event)) {
 		switch (event.type) {
 			case SDL_QUIT:
-				quit = true;
+				end = true;
 				break;
 			case SDL_KEYDOWN:
 				for(int cnt {}; const auto& type : SDL_KEY_TYPES){
@@ -59,5 +54,5 @@ bool Platform::processInput(std::array<uint8_t, 16>& keys) {
 				break;
 		}
 	}
-	return quit;
+	return end;
 }
