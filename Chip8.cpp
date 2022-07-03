@@ -6,7 +6,7 @@
 
 Chip8::Chip8() : m_PC {START_ADDRESS}
                , mt {randomGenerator()}
-			   , chunk { Mix_LoadWAV("audio/beep.wav"), Mix_FreeChunk }
+			   , m_chunk { Mix_LoadWAV("audio/beep.wav"), Mix_FreeChunk }
 {
 	// load fonts
 	for(auto i = 0; i < FONT_ELEMENT_SIZE; ++i){
@@ -14,10 +14,10 @@ Chip8::Chip8() : m_PC {START_ADDRESS}
 	}
 
 	// load sounds
-	if(!chunk){
+	if(!m_chunk){
 		std::cout << "Sound could not be loaded" << std::endl;
 	}
-	Mix_VolumeChunk(chunk.get(), MIX_MAX_VOLUME / 2);
+	Mix_VolumeChunk(m_chunk.get(), MIX_MAX_VOLUME / 2);
 }
 
 // Load game to memory (from 0x200)
@@ -56,7 +56,7 @@ void Chip8::emulateCycle() {
 	if(m_delayTimer > 0) m_delayTimer--;
 
 	if(m_soundTimer > 0) {
-		if (m_soundTimer == 1) Mix_PlayChannel(-1, chunk.get(), 0);
+		if (m_soundTimer == 1) Mix_PlayChannel(-1, m_chunk.get(), 0);
 		m_soundTimer--;
 	}
 

@@ -44,7 +44,7 @@ int main() {
 	loadAudio();
 	Chip8 chip {};
 	int videoScale = 10;
-	int delay = 5;
+	int delay = 1;
 	const std::string& path = menu();
 
 	Platform platform {"Chip-8 Emulator", DISPLAY_WIDTH * videoScale, DISPLAY_HEIGHT * videoScale, DISPLAY_WIDTH, DISPLAY_HEIGHT};

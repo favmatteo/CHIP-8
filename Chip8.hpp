@@ -75,7 +75,7 @@ class Chip8 {
 	std::uniform_int_distribution<int> dist {0, 255};
 
 	// Audio
-	std::unique_ptr<Mix_Chunk, void (*)(Mix_Chunk *)> chunk;
+	std::unique_ptr<Mix_Chunk, void (*)(Mix_Chunk *)> m_chunk;
 
 	// OPCODE Implementations http://devernay.free.fr/hacks/chip8/C8TECH10.HTM
 	void OPCODE_00E0(); // CLS
