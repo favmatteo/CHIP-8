@@ -8,7 +8,7 @@ int main() {
 	Chip8 chip {};
 	int videoScale = 10;
 	int cycleDelay = 5;
-	const std::string path = "/home/matteo/Documents/Programmazione/C++/Progetti/CHIP-8/ROM/tetris.ch8";
+	const std::string path = "rom/tetris.ch8";
 
 	Platform platform {"Chip-8 Emulator", DISPLAY_WIDTH * videoScale, DISPLAY_HEIGHT * videoScale, DISPLAY_WIDTH, DISPLAY_HEIGHT};
 
@@ -24,7 +24,7 @@ int main() {
 
 	while(!quit)
 	{
-		quit = platform.processInput(&keyboards[0]);
+		quit = platform.processInput(keyboards);
 		auto currentTime = std::chrono::high_resolution_clock::now();
 		float dt = std::chrono::duration<float, std::chrono::milliseconds::period>(currentTime - lastCycleTime).count();
 		if (dt > cycleDelay)

@@ -28,7 +28,7 @@ void Platform::update(const void* buffer, int pitch) {
 	SDL_RenderPresent(renderer);
 }
 
-bool Platform::processInput(uint8_t* keys) {
+bool Platform::processInput(std::array<uint8_t, 16>& keys) {
 	bool quit = false;
 
 	SDL_Event event;
@@ -51,7 +51,7 @@ bool Platform::processInput(uint8_t* keys) {
 			case SDL_KEYUP:
 				for(int cnt {}; const auto& type : SDL_KEY_TYPES){
 					if(event.key.keysym.sym == type){
-						keys[cnt] = 1;
+						keys[cnt] = 0;
 						break;
 					}
 					cnt++;

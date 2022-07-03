@@ -12,7 +12,7 @@ constexpr uint16_t START_ADDRESS {0x200};
 constexpr uint16_t FONTSET_START_ADDRESS {0x50};
 constexpr uint8_t CHAR {16};
 constexpr uint8_t BYTE_IN_CHAR {5};
-constexpr uint8_t FONT_ELEMENT_SIZE {CHAR * BYTE_IN_CHAR}; // 16 character rappresented by 5 bytes each
+constexpr uint8_t FONT_ELEMENT_SIZE {CHAR * BYTE_IN_CHAR}; // 16 character represented by 5 bytes each
 constexpr uint8_t DISPLAY_WIDTH {64};
 constexpr uint8_t DISPLAY_HEIGHT {32};
 constexpr uint16_t MEMORY_SIZE {4096};
@@ -56,8 +56,8 @@ class Chip8 {
 	uint16_t m_opcode {}; // 35 OPCODE_INVALID
 	std::array<uint8_t, MEMORY_SIZE> m_memory {}; // 4096 byte
 	std::array<uint8_t, REGISTERS> m_registers {}; // 16 Registers (V0-VF) 8bit
-	uint16_t m_RI {}; // 16 bit (12 was ok), Index Register used to store memory addresses for use in operations
-	uint16_t m_PC {}; // 16 bit (12 was ok), register that contains the address of the next instruction.
+	uint16_t m_RI {}; // Index Register used to store memory addresses for use in operations
+	uint16_t m_PC {}; // Program counter, register that contains the address of the next instruction.
 
 	// Graphics
 	std::array<uint32_t, DISPLAY_WIDTH * DISPLAY_HEIGHT> m_graphics {}; // 64 pixel wide x 32 pixel high

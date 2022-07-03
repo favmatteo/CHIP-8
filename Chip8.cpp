@@ -314,10 +314,10 @@ void Chip8::OPCODE_Dxyn() {
 		for(uint col {}; col < 8; ++col){
 			uint8_t spritePixel = spriteByte & (0x80 >> col);
 			uint32_t& screenPixel = m_graphics[(yPos + row) * DISPLAY_WIDTH + (xPos + col)];
-			if(spritePixel){
-				if(screenPixel == 0xFFFFFFFF) m_registers[0xF] = 1;
+			if(spritePixel) {
+				if (screenPixel == 0xFFFFFFFF) m_registers[0xF] = 1;
+				screenPixel = screenPixel ^ 0xFFFFFFFF;
 			}
-			screenPixel = screenPixel ^ 0xFFFFFFFF;
 		}
 	}
 }

@@ -20,7 +20,7 @@ class Platform
 	~Platform();
 
 	void update(void const* buffer, int pitch);
-	bool processInput(uint8_t* keys);
+	bool processInput(std::array<uint8_t, 16>& keys);
 
   private:
 	SDL_Window* window {};
