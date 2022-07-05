@@ -7,14 +7,14 @@
 #include "Chip8.hpp"
 #include "Platform.hpp"
 
-void loadAudio(){
+void loadAudio() {
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
 		std::cout << "Mixer cannot be initialized" << std::endl;
 	}
 	Mix_AllocateChannels(32);
 }
 
-std::string menu(){
+std::string menu() {
 	std::vector<std::pair<std::string, uint16_t>> games {};
 	const std::string path = "rom/";
 	for(const auto& entry : std::filesystem::directory_iterator(path)){
@@ -46,29 +46,24 @@ int main() {
 	int videoScale = 10;
 	int delay = 1;
 	const std::string& path = menu();
+	chip.loadGame(path);
 
 	Platform platform {"Chip-8 Emulator", DISPLAY_WIDTH * videoScale, DISPLAY_HEIGHT * videoScale, DISPLAY_WIDTH, DISPLAY_HEIGHT};
-
-	chip.loadGame(path);
 
 	auto& keyboards = const_cast<std::array<uint8_t, 16>&>(chip.getKeypad());
 	auto& graphics = chip.getGraphics();
 
-	int videoPitch = sizeof(graphics[0]) * DISPLAY_WIDTH;
-
 	auto prev = std::chrono::high_resolution_clock::now();
 	bool end = false;
 
-	while(!end)
-	{
+	while(!end) {
 		end = platform.processInput(keyboards);
 		auto now = std::chrono::high_resolution_clock::now();
-		float dt = std::chrono::duration<float, std::chrono::milliseconds::period>(now - prev).count();
-		if (dt > static_cast<float>(delay))
-		{
+		float diff = std::chrono::duration<float, std::chrono::milliseconds::period>(now - prev).count();
+		if (diff > static_cast<float>(delay)) {
 			prev = now;
 			chip.emulateCycle();
-			platform.update(&graphics[0], videoPitch);
+			platform.update(&graphics[0], 256);
 		}
 
 	}
