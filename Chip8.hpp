@@ -40,7 +40,7 @@ class Chip8 {
   public:
 	Chip8();
 
-	void loadGame(const std::string& path);
+	void loadGame(std::string_view path);
 	void emulateCycle();
 	void fromOpcodeToFunction();
 

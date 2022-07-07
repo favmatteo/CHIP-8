@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <string_view>
 
 #include "Chip8.hpp"
 #include "SDL2/SDL_mixer.h"
@@ -21,8 +22,8 @@ Chip8::Chip8() : m_PC {START_ADDRESS}
 }
 
 // Load game to memory (from 0x200)
-void Chip8::loadGame(const std::string& path) {
-	std::ifstream game {path, std::ios::in | std::ios::binary | std::ios::ate};
+void Chip8::loadGame(std::string_view path) {
+	std::ifstream game {path.data(), std::ios::in | std::ios::binary | std::ios::ate};
 
 	if(game.is_open()){
 		// Get size of game

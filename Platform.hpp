@@ -13,7 +13,7 @@ const std::array SDL_KEY_TYPES {SDLK_ESCAPE, SDLK_1, SDLK_2, SDLK_3, SDLK_4,
 class Platform
 {
   public:
-	Platform(const std::string& name, int windowWidth, int windowHeight, int textureWidth, int textureHeight);
+	Platform(std::string_view name, int windowWidth, int windowHeight, int textureWidth, int textureHeight);
 	~Platform();
 
 	void update(void const* buffer, int pitch);
