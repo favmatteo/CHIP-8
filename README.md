@@ -16,7 +16,8 @@ This emulator requires [SDL](https://www.libsdl.org/) and [SDL-MIXER](https://ww
 Install the dependencies and compile with
 
 ```sh
-cmake .
+mkdir build && cd build
+cmake ../
 cmake --build .
 ./CHIP_8
 ```
